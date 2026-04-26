@@ -1,3 +1,44 @@
+<?php
+    session_start();
+    require_once("../models/user.php");
+    
+    $nameErr = $surnameErr = $emailErr = $passErr =$pass2Err = "";
+    $name = $surname = $mail = $gender = $usage = $password = $password2= "";
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+        $name = trim($_POST["name"]);
+        if (!preg_match("/^[a-zA-Z-' ]*$/", $name)) {
+            $nameErr = "It must contain only letters";
+        }
+
+        $surname = trim($_POST["surname"]); // corretto surnae in surname
+        if (!preg_match("/^[a-zA-Z-' ]*$/", $surname)) {
+            $surnameErr = "It must contain only letters";
+        }
+
+        $mail = trim($_POST["mail"]);
+        $gender=$_POST["gender"];
+        $usage=$_POST["usage"];
+
+        $password = $_POST["password"];
+        if (!preg_match("/^(?=.*[0-9]).{6,}$/", $password)) {
+            $passErr = "Password must be at least 6 characters long and contain at least one number";
+        }
+        $password2 = $_POST["password2"];
+
+        //CONTROLLO FINALE
+        if (empty($nameErr) && empty($surnameErr) && empty($passErr)) {
+            if($password!=$password2){
+                $pass2Err="Password must be equal to the original one";
+            }else{
+                $user = new User($name,$surname,$mail,$gender,$usage,$password);
+                $user->signUp();
+            }
+        }
+    }
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -83,20 +124,22 @@
                 <p class="text-slate-400 text-sm">Enter your personal details to set up your secure environment.</p>
             </div>
 
-            <form class="space-y-5" onsubmit="event.preventDefault();">
+            <form class="space-y-5"  method="post">
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div class="space-y-2">
                         <label for="firstName" class="block text-xs font-bold text-slate-400 uppercase tracking-wider">First Name</label>
-                        <input type="text" id="firstName" required
+                        <input name="name" type="text" id="firstName" required
                             class="block w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400 transition-all"
                             placeholder="John">
+                        <h1 class="text-[11px] text-[#a1d907]"> <?php echo $nameErr; ?> </h1>
                     </div>
                     <div class="space-y-2">
                         <label for="lastName" class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Last Name</label>
-                        <input type="text" id="lastName" required
+                        <input name="surname" type="text" id="lastName" required
                             class="block w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400 transition-all"
                             placeholder="Doe">
+                        <h1 class="text-[11px] text-[#a1d907]"> <?php echo $surnameErr; ?> </h1>
                     </div>
                 </div>
 
@@ -106,27 +149,29 @@
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>
                         </div>
-                        <input type="email" id="email" required
+                        <input name="mail" type="email" id="email" required
                             class="block w-full pl-11 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400 transition-all"
                             placeholder="john.doe@example.com">
+                        <h1 class="text-[11px] text-[#a1d907]"> <?php echo $emailErr; ?> </h1>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div class="space-y-2">
                         <label for="gender" class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Gender</label>
-                        <select id="gender" required class="block w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400 transition-all cursor-pointer">
+                        <select name="gender" id="gender" required class="block w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400 transition-all cursor-pointer">
                             <option value="" disabled selected class="text-slate-600">Select...</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
                             <option value="non-binary">Non-binary</option>
                             <option value="prefer-not-to-say">Prefer not to say</option>
                         </select>
+                        
                     </div>
 
                     <div class="space-y-2">
                         <label for="useCase" class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Using KVault for</label>
-                        <select id="useCase" required class="block w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400 transition-all cursor-pointer">
+                        <select name="usage" id="useCase" required class="block w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400 transition-all cursor-pointer">
                             <option value="" disabled selected>Select account type</option>
                             <option value="personal">Personal</option>
                             <option value="enterprise">Enterprise</option>
@@ -142,9 +187,10 @@
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                             </div>
-                            <input type="password" id="password" required
+                            <input name="password" type="password" id="password" required
                                 class="block w-full pl-11 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400 transition-all"
                                 placeholder="••••••••••••">
+                            <h1 class="text-[11px] text-[#a1d907]"> <?php echo $passErr; ?> </h1>
                         </div>
                     </div>
                     <div class="space-y-2">
@@ -153,9 +199,10 @@
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
                             </div>
-                            <input type="password" id="confirmPassword" required
+                            <input name="password2" type="password" id="confirmPassword" required
                                 class="block w-full pl-11 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400 transition-all"
                                 placeholder="••••••••••••">
+                            <h1 class="text-[11px] text-[#a1d907]"> <?php echo $pass2Err; ?> </h1>
                         </div>
                     </div>
                 </div>
@@ -169,10 +216,10 @@
                     </label>
                 </div>
 
-                <button type="submit" 
+                <input type="submit" value="Create Account"
                     class="w-full flex justify-center py-4 px-4 mt-4 border border-transparent rounded-xl shadow-sm text-sm font-black uppercase tracking-wider text-black bg-lime-400 hover:bg-lime-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-400 focus:ring-offset-slate-950 transition-all transform hover:-translate-y-0.5">
-                    Create Account
-                </button>
+                    
+                </input>
             </form>
 
             <p class="text-center text-sm text-slate-500 mt-8 pb-8">
