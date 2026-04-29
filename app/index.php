@@ -1,6 +1,14 @@
 <?php
     session_start();
-    $_SESSION["logged"];
+
+    if (isset($_SESSION['loginSuccess'])) {
+        echo $_SESSION['loginSuccess'];
+        unset($_SESSION['loginSuccess']);
+    }
+    if (!isset($_SESSION['logged'])) {
+        $_SESSION["logged"]=false;
+    }
+
 ?>
 
 
@@ -47,12 +55,23 @@
                     <a href="https://github.com/FrancescoScanni/KVault.git" class="hover:text-lime-400 transition-colors">Repository</a>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <a href="pages/logIn.php" class="hidden sm:block text-sm font-bold text-white hover:text-lime-400 transition-colors uppercase tracking-wider">Log In</a>
-                    <a href="pages/signUp.php" class="px-6 py-2.5 bg-lime-400 text-black rounded-lg text-sm font-black uppercase tracking-wider hover:bg-lime-300 transition-all transform hover:-translate-y-0.5 shadow-[0_0_15px_rgba(163,230,53,0.2)]">
-                        Get Started
-                    </a>
-                </div>
+                <?php
+                    if($_SESSION["logged"]){
+                        echo '<div class="flex items-center gap-4">
+                                <a href="pages/profile.php" class="hidden sm:block text-sm font-bold text-white hover:text-lime-400 transition-colors uppercase tracking-wider">Profile</a>
+                                <a href="pages/logOut.php" onclick="return confirm(`If you sure you want to log out, click OK.`)" class="px-6 py-2.5 bg-lime-400 text-black rounded-lg text-sm font-black uppercase tracking-wider hover:bg-lime-300 transition-all transform hover:-translate-y-0.5 shadow-[0_0_15px_rgba(163,230,53,0.2)]">
+                                    Logout
+                                </a>
+                            </div>';
+                    }else{
+                        echo '<div class="flex items-center gap-4">
+                                <a href="pages/logIn.php" class="hidden sm:block text-sm font-bold text-white hover:text-lime-400 transition-colors uppercase tracking-wider">Log In</a>
+                                <a href="pages/signUp.php" class="px-6 py-2.5 bg-lime-400 text-black rounded-lg text-sm font-black uppercase tracking-wider hover:bg-lime-300 transition-all transform hover:-translate-y-0.5 shadow-[0_0_15px_rgba(163,230,53,0.2)]">
+                                    Get Started
+                                </a>
+                            </div>';
+                    }
+                ?>
             </div>
         </div>
     </nav>

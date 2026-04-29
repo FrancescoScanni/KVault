@@ -1,3 +1,29 @@
+<?php
+    session_start();
+    require_once("../components/warnings.php");
+    require_once("../models/user.php");
+    $mail=$password="";
+    
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $mail = trim($_POST["mail"]);
+        $password=trim($_POST["password"]);
+
+        if(User::logIn($mail,$password)==true){
+            //echo "giusto";
+            $_SESSION["logged"]=true;
+            $_SESSION["loginSuccess"]=$loginSuccess;
+            header("Location: ../index.php");
+            exit;
+        }else{
+            //echo "err";
+            echo $wrongCredentials;
+            $_SESSION["logged"]=false;
+        }
+    }
+    
+    
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,7 +95,7 @@
                 <p class="text-slate-400 text-sm">Enter your credentials to decrypt and access your vault.</p>
             </div>
 
-            <form class="space-y-6" onsubmit="event.preventDefault();">
+            <form class="space-y-6" action="logIn.php" method="post">
                 
                 <div class="space-y-2">
                     <label for="email" class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Email Address</label>
@@ -77,7 +103,7 @@
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>
                         </div>
-                        <input type="email" id="email" required
+                        <input type="email" name="mail" required
                             class="block w-full pl-11 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400 transition-all"
                             placeholder="name@company.com">
                     </div>
@@ -89,7 +115,7 @@
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                         </div>
-                        <input type="password" id="password" required
+                        <input type="password" name="password" required
                             class="block w-full pl-11 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-lime-400/50 focus:border-lime-400 transition-all"
                             placeholder="••••••••••••">
                     </div>
@@ -100,7 +126,6 @@
                         <input id="remember" type="checkbox" class="w-4 h-4 bg-slate-900 border-slate-800 rounded text-lime-400 focus:ring-lime-400 focus:ring-offset-slate-950 cursor-pointer">
                         <label for="remember" class="text-sm text-slate-400 cursor-pointer">Remember device</label>
                     </div>
-                    <a href="#" class="text-sm font-bold text-lime-400 hover:text-lime-300 transition-colors">Lost Access?</a>
                 </div>
 
                 <button type="submit" 

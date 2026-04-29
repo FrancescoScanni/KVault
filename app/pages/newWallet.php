@@ -1,3 +1,10 @@
+<?php
+    session_start();
+    require_once("../models/wallet.php");
+    require_once("../components/warnings.php");
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -120,19 +127,36 @@
                         </form>
                     </div>
 
+
+                    <!--Blocco nuovo wallet-->
+
+                    <?php
+                        $name=$initial_balance="";
+                        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                            $name = trim($_POST["name"]);
+                            $initial_balance = trim($_POST["initial_balance"]);
+
+                            $wallet=new Wallet();
+                            if($wallet->createWallet($_SESSION["userID"], $name, "$", $initial_balance)){
+                                echo $addWallet;
+                            }
+                        }
+
+                    ?>
+
                     <div id="form-wallet" class="glass-panel border border-slate-800 p-8 rounded-3xl hidden">
                         <h2 class="text-xl font-bold mb-6">Initialize New Container</h2>
-                        <form onsubmit="handleFormSubmit(event)">
+                        <form action="newWallet.php" method="post">
                             <div class="space-y-6 mb-8">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Vault Name</label>
-                                    <input type="text" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400" placeholder="e.g., Binance, Cash, Savings">
+                                    <input type="text" name="name" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400" placeholder="e.g., Binance, Cash, Savings">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Initial Balance (Liquidity)</label>
                                     <div class="relative">
                                         <span class="absolute inset-y-0 left-4 flex items-center text-slate-500 font-bold">$</span>
-                                        <input type="number" step="0.01" required class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400" placeholder="0.00">
+                                        <input type="number" name="initial_balance" step="0.01" required class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400" placeholder="0.00">
                                     </div>
                                     <p class="mt-2 text-xs text-slate-500">Your balance will never be synced in plaintext with external servers.</p>
                                 </div>

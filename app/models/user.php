@@ -16,11 +16,10 @@
             $this->email = $email;
             $this->gender = $gender;
             $this->usage = $usage;
-            $this->setPassword($password); //hashing
+            $this->password = password_hash($password, PASSWORD_DEFAULT);
         }
 
         // --- GETTER (Per recuperare i dati) ---
-
         public function getName(): string {
             return $this->name;
         }
@@ -35,6 +34,8 @@
         }
 
 
+
+        //ACCOUNT and LOGS
         public function signUp(){
             global $conn, $signedUp, $alreadySignedUp;
             try {
@@ -48,22 +49,31 @@
                         'email'    => $this->email,
                         'gender'   => $this->gender,
                         'usage'    => $this->usage,
-                        'password' => password_hash($this->password, PASSWORD_BCRYPT) // MAI salvare in chiaro!
+                        'password' => $this->password // MAI salvare in chiaro!
                     ]);
                 echo $signedUp;
             } catch(PDOException $e) {
                 echo "$alreadySignedUp";
             }
         }
-
-
-
-        //PASSWORD section
-        public function setPassword(string $password): void {
-            $this->password = password_hash($password, PASSWORD_DEFAULT);
+        public static function logIn($email, $password) {
+            global $conn; // L'oggetto PDO
+            $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+            $stmt->execute([trim($email)]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($user && password_verify($password, $user['password'])) {
+                $_SESSION["userID"]=$user["id"];
+                return true;
+            }
+            return false;
         }
-        public function verifyPassword(string $password): bool {
-            return password_verify($password, $this->password);
+        public static function logout() {
+            session_start(); // Assicura che la sessione sia attiva
+            $_SESSION = array(); // Svuota le variabili
+            session_destroy(); // Distrugge la sessione
+            header("Location: ../index.php"); // Torna alla home
+            $_SESSION["logged"]=false;
+            exit;
         }
 
     }
