@@ -1,3 +1,13 @@
+<?php
+    session_start();
+
+
+    if($_SESSION["logged"]==false){
+        header("Location: ../logIn.php");
+        exit;
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -146,6 +156,7 @@
     </main>
 
     <script>
+        /*
         // 1. STATO DELL'APP (Modificabile)
         // Cambia i saldi dei wallet e le transazioni. La UI calcolerà automaticamente i totali e le barre.
         const dashboardState = {
@@ -264,6 +275,7 @@
                 `;
             }).join('');
         }
+        */
     </script>
 </body>
 </html>

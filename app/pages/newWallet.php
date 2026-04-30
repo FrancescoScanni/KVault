@@ -3,6 +3,22 @@
     require_once("../models/wallet.php");
     require_once("../components/warnings.php");
 
+    if($_SESSION["logged"]==false){
+        header("Location: logIn.php");
+        exit;
+    }
+    if (isset($_SESSION['succTrans'])) {
+        echo $succTrans;
+        unset($_SESSION['succTrans']);
+    }
+    if (isset($_SESSION['errTrans'])) {
+        echo $errTrans;
+        unset($_SESSION['errTrans']);
+    }
+
+    $wallet=new Wallet();
+    $userWallets = $wallet->getWalletsByUserId($_SESSION["userID"]);
+
 ?>
 
 <!DOCTYPE html>
@@ -57,26 +73,25 @@
                 <h1 class="text-4xl font-black uppercase italic tracking-tight text-white mb-2">Operations <span class="text-lime-400">Hub</span></h1>
                 <p class="text-slate-400">Insert, encrypt, and manage your vault's cash flow.</p>
             </header>
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                
                 <div class="lg:col-span-2 space-y-6">
-                    
                     <div class="flex p-1 bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm">
                         <button id="tab-tx" class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest bg-slate-800 text-white rounded-xl shadow-sm transition-all">Transaction</button>
                         <button id="tab-wallet" class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-all rounded-xl">New Wallet</button>
                     </div>
+                    
+                    <!-- TRANSACTION-->
 
                     <div id="form-tx" class="glass-panel border border-slate-800 p-8 rounded-3xl">
-                        <form id="transactionForm" onsubmit="handleFormSubmit(event)">
+                        <form id="transactionForm" action="transaction.php" method="post">
                             
                             <div class="flex p-1 bg-slate-950 border border-slate-800 rounded-xl mb-8 w-full max-w-[200px]">
                                 <label class="flex-1 text-center cursor-pointer relative">
-                                    <input type="radio" name="tx_type" value="OUT" class="peer sr-only" checked>
+                                    <input onclick="<?php $_SESSION["income"]="out";?>" type="radio" name="tx_type" value="OUT" class="peer sr-only" checked>
                                     <div class="py-2 text-xs font-bold uppercase tracking-wider text-slate-500 peer-checked:text-white peer-checked:bg-red-500/20 peer-checked:border peer-checked:border-red-500/50 rounded-lg transition-all">Expense</div>
                                 </label>
                                 <label class="flex-1 text-center cursor-pointer relative">
-                                    <input type="radio" name="tx_type" value="IN" class="peer sr-only">
+                                    <input onclick="<?php $_SESSION["income"]="in";?>" type="radio" name="tx_type" value="IN" class="peer sr-only">
                                     <div class="py-2 text-xs font-bold uppercase tracking-wider text-slate-500 peer-checked:text-black peer-checked:bg-lime-400 peer-checked:shadow-[0_0_15px_rgba(163,230,53,0.3)] rounded-lg transition-all">Income</div>
                                 </label>
                             </div>
@@ -86,19 +101,19 @@
                                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Amount</label>
                                     <div class="relative">
                                         <span class="absolute inset-y-0 left-4 flex items-center text-slate-500 font-bold">$</span>
-                                        <input type="number" step="0.01" required class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400 transition-colors" placeholder="0.00">
+                                        <input type="number" name="amount" step="0.01" required class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400 transition-colors" placeholder="0.00">
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Date</label>
-                                    <input type="date" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400 transition-colors cursor-pointer" id="today-date">
+                                    <input type="date" name="date" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400 transition-colors cursor-pointer" id="today-date">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Category</label>
-                                    <select required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400 transition-colors appearance-none cursor-pointer">
+                                    <select name="category" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400 transition-colors appearance-none cursor-pointer">
                                         <option value="" disabled selected>Select...</option>
                                         <option value="food">Dining & Groceries</option>
                                         <option value="transport">Transport & Auto</option>
@@ -108,16 +123,29 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Pay from (Vault)</label>
-                                    <select required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400 transition-colors appearance-none cursor-pointer">
-                                        <option value="w1">Main Card (Revolut)</option>
-                                        <option value="w2">Physical Cash</option>
+                                    <select name="wallet" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400 transition-colors appearance-none cursor-pointer">
+                                        <option value="" disabled selected>Select a wallet</option>
+                                        <?php 
+                                            // Recuperiamo i wallet dell'utente dalla sessione
+                                            $userWallets = $wallet->getWalletsByUserId($_SESSION["userID"]); 
+
+                                            // Verifichiamo se l'utente ha dei wallet
+                                            if ($userWallets): 
+                                                foreach ($userWallets as $w): ?>
+                                                    <option>
+                                                        <?php echo htmlspecialchars($w['name']); ?> 
+                                                    </option>
+                                                <?php endforeach; 
+                                            else: ?>
+                                                <option value="">No wallets found</option>
+                                            <?php endif; ?>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="mb-8">
                                 <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Secure Notes (Optional)</label>
-                                <input type="text" class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-slate-300 focus:outline-none focus:border-lime-400 transition-colors" placeholder="e.g., Business dinner with clients">
+                                <input type="text" name="desc" class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-slate-300 focus:outline-none focus:border-lime-400 transition-colors" placeholder="e.g., Business dinner with clients">
                             </div>
 
                             <button type="submit" id="submitBtn" class="w-full flex items-center justify-center gap-2 py-4 px-6 bg-lime-400 hover:bg-lime-300 text-black rounded-xl font-black uppercase tracking-wider shadow-[0_0_20px_rgba(163,230,53,0.15)] transition-all transform hover:-translate-y-0.5">
@@ -136,9 +164,10 @@
                             $name = trim($_POST["name"]);
                             $initial_balance = trim($_POST["initial_balance"]);
 
-                            $wallet=new Wallet();
                             if($wallet->createWallet($_SESSION["userID"], $name, "$", $initial_balance)){
                                 echo $addWallet;
+                            }else{
+                                echo $errWallet;
                             }
                         }
 
