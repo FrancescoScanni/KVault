@@ -1,11 +1,19 @@
 <?php
     session_start();
-
+    include_once("../../models/wallet.php");
+    
+    $wallet = new Wallet();
+    $totalBalance = number_format($wallet->getTotalBalance($_SESSION["userID"]), 2, ',', '.');
+    $totalIncome = $wallet->getTotalIncome($_SESSION["userID"]);
+    $totalExpense = $wallet->getTotalExpense($_SESSION["userID"]);
+    $wallets=$wallet->getWallets($_SESSION["userID"]);
 
     if($_SESSION["logged"]==false){
         header("Location: ../logIn.php");
         exit;
     }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -91,7 +99,7 @@
                     <h2 class="text-sm font-black uppercase tracking-widest text-slate-400 mb-2">Total Liquidity</h2>
                     <div class="flex items-baseline gap-1">
                         <span class="text-4xl font-bold text-slate-500">$</span>
-                        <span id="total-balance" class="text-6xl font-black tracking-tighter text-white">--</span>
+                        <span id="total-balance" class="text-6xl font-black tracking-tighter text-white ml-[5px]"> <?php echo $totalBalance; ?> </span>
                     </div>
                 </div>
 
@@ -101,7 +109,7 @@
                         <div>
                             <div class="flex justify-between text-xs font-bold mb-1">
                                 <span class="text-lime-400 uppercase tracking-wider">In</span>
-                                <span id="total-income" class="text-white">$--</span>
+                                <span id="total-income" class="text-white">$ <?php echo number_format($totalIncome, 2, ',', '.'); ?> </span>
                             </div>
                             <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
                                 <div id="bar-income" class="bg-lime-400 h-1.5 rounded-full animate-width" style="width: 0%"></div>
@@ -110,7 +118,7 @@
                         <div>
                             <div class="flex justify-between text-xs font-bold mb-1">
                                 <span class="text-red-500 uppercase tracking-wider">Out</span>
-                                <span id="total-expense" class="text-white">$--</span>
+                                <span id="total-expense" class="text-white">$ <?php echo number_format($totalExpense, 2, ',', '.'); ?> </span>
                             </div>
                             <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
                                 <div id="bar-expense" class="bg-red-500 h-1.5 rounded-full animate-width" style="width: 0%"></div>
@@ -131,10 +139,52 @@
                         </h2>
                     </div>
 
-                    <div id="wallets-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="glass-panel border border-slate-800 p-8 rounded-3xl text-center md:col-span-2">
-                            <div class="w-8 h-8 mx-auto mb-4 border-4 border-slate-800 border-t-lime-400 rounded-full animate-spin"></div>
-                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Scanning wallets...</p>
+                    <div id="wallets-container" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="glass-panel border border-slate-800 p-8 rounded-3xl text-center md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <?php
+                                $total=0;
+                                foreach($wallets as $w){
+                                    $total += (float)$w["initial_balance"];
+                                }
+                                foreach($wallets as $w){
+
+                                    
+                                    echo '<div class="glass-panel border border-slate-800 p-6 rounded-3xl hover:border-slate-700 transition-all duration-300 group shadow-lg max-w-[400px] max-h-[200px] ">
+                                                <div class="flex justify-between items-start mb-6">
+                                                    <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:border-slate-600 transition-colors">
+                                                        <svg class="w-5 h-5 text-slate-500 group-hover:text-lime-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                                        </svg>
+                                                    </div>
+
+                                                    <div class="text-right">
+                                                        <h3 class="text-2xl font-black text-white uppercase tracking-tighter leading-none group-hover:text-lime-400 transition-colors">
+                                                            ' . $w["name"] . '
+                                                        </h3>
+                                                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Vault</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex justify-between items-end mb-4">
+                                                    <div>
+                                                        <span class="text-3xl text-auto font-black text-white block leading-none mt-[5px]">
+                                                            <span class="text-lg font-bold opacity-30">$</span> ' . $w["initial_balance"] . '
+                                                        </span>
+                                                        <p class="text-[10px] text-slate-500 font-bold mt-1 italic">Total available balance</p>
+                                                    </div>
+                                                    
+                                                    <div class="text-right">
+                                                        <span class="text-xs font-black text-slate-400"> ' . round((float)$w["initial_balance"]/$total * 100, 1) . '%</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-white/5">
+                                                    <div class="bg-slate-700 h-full rounded-full group-hover:bg-gradient-to-r group-hover:from-lime-500 group-hover:to-emerald-500 transition-all duration-700" 
+                                                        style="width: ' . round((float)$w["initial_balance"]/$total * 100, 1) . '%"></div>
+                                                </div>
+                                            </div>';
+                                }
+                            ?>
                         </div>
                     </div>
                 </div>
@@ -166,8 +216,8 @@
                 { id: "w3", name: "Binance Cold", balance: 6400.00, type: "crypto" }
             ],
             currentMonth: {
-                income: 4500.00,
-                expenses: 1250.00
+                income: <?php echo $totalIncome; ?>,
+                expenses: <?php echo $totalExpense; ?>
             },
             recentTransactions: [
                 { desc: "Freelance Client X", amount: 1200.00, type: "IN", date: "Today", wallet: "Revolut Main" },

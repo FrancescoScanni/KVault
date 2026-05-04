@@ -16,7 +16,8 @@
 
     $transaction=new Wallet();
     $wallet=$transaction->getWalletID($wallet);
-    if($transaction->addTransaction($_SESSION["userID"], $wallet, $amount, $desc, $date)){
+    $income = $_SESSION["income"] ? 0 : 1; 
+    if($transaction->addTransaction($_SESSION["userID"], $wallet, $amount, $desc, $date, $income)){
         $_SESSION["succTrans"]=true;
     }else{
         $_SESSION["errTrans"]=true;

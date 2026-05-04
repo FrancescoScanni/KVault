@@ -1,6 +1,6 @@
 <?php
     require_once("connectionDB.php");
-    require_once("../models/connectionDB.php");
+    
     class Wallet {
         private $table = "wallets";
         public $id;
@@ -10,7 +10,7 @@
         public $initial_balance;
         
 
-
+        //WALLETS  
         public function createWallet($user_id,$name,$currency,$initial_balance){
             global $conn;
 
@@ -53,35 +53,90 @@
         }
 
 
-        
-        public function addTransaction($user_id, $wallet_id, $amount, $description, $date, $is_transfer = 0, $to_wallet_id = null) {
+        //TRANSACTIONS
+        public function addTransaction($user_id, $wallet_id, $amount, $description, $date, $income) {
             global $conn;
-            $sql = "INSERT INTO transactions (
-                        user_id, 
-                        wallet_id, 
-                        amount, 
-                        description, 
-                        transaction_date, 
-                        is_transfer, 
-                        to_wallet_id
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?)"; 
 
             try {
-                $stmt = $conn->prepare($sql);
-                $success = $stmt->execute([
+                $conn->beginTransaction();
+
+                $sqlInsert = "INSERT INTO transactions (
+                                user_id, wallet_id, amount, description, 
+                                transaction_date, income
+                            ) VALUES (?, ?, ?, ?, ?, ?)";
+                
+                $stmtInsert = $conn->prepare($sqlInsert);
+                $stmtInsert->execute([
                     $user_id,
                     $wallet_id,
                     $amount,
                     $description,
                     $date,
-                    $is_transfer,
-                    $to_wallet_id
+                    $income
                 ]);
-                return $success;
+
+
+                if ($income) {
+                    $sqlUpdate = "UPDATE wallets SET initial_balance = initial_balance + ? WHERE id = ? AND user_id = ?";
+                }else {
+                    $sqlUpdate = "UPDATE wallets SET initial_balance = initial_balance - ? WHERE id = ? AND user_id = ?";
+                }
+                
+                $stmtUpdate = $conn->prepare($sqlUpdate);
+                $stmtUpdate->execute([
+                    $amount, 
+                    $wallet_id, 
+                    $user_id
+                ]);
+
+                $conn->commit();
+                return true;
 
             } catch (PDOException $e) {
+                if ($conn->inTransaction()) {
+                    $conn->rollBack();
+                }
+                error_log("Errore transazione: " . $e->getMessage());
                 return false;
             }
         }
+
         
+        //DASHBOARD
+        public function getTotalBalance($user_id) {
+            global $conn;
+            $sql = "SELECT SUM(initial_balance) AS total_balance FROM wallets WHERE user_id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$user_id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['total_balance'] ?? 0;
+        }
+        public function getTotalIncome($user_id){
+            global $conn;
+            $sql="SELECT SUM(amount)FROM transactions WHERE income=1 AND user_id=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$user_id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['SUM(amount)'] ?? 0;
+        }
+        public function getTotalExpense($user_id){
+            global $conn;
+            $sql="SELECT SUM(amount)FROM transactions WHERE income=0 AND user_id=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$user_id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['SUM(amount)'] ?? 0;
+        }
+        public function getWallets($user_id) {
+            global $conn;
+            try {
+            $sql = "SELECT * from wallets  WHERE user_id=? ORDER BY name ASC;";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$user_id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                error_log("Errore recupero portafogli: " . $e->getMessage());
+                return [];
+            }
+        }
     }
