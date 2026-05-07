@@ -6,14 +6,16 @@ A PHP-based personal finance tracker web app integrated with a MySQL database an
 
 ### Online (simulation.txt)
   1. Just click on the Demo link
-  2. Start fresh by creating a new account from scratch exploring all the possible features
-  3. **Optional:** Use the credentials in `simulation.txt` to load a pre-populated account prototype and explore the app with existing data.
+  2. Use the credentials in `simulation.txt` to load a pre-populated account prototype and explore the app with existing data
+       #### OR  
+  3. **Optional:** Start fresh by creating a new account from scratch exploring all the possible features.
+
 ### Self-hosted
-  1. Clone this repository on your editor
+  1. Clone this repository in your editor
   2. Run the *docker compose* file in the terminal
   3. Access the phpMyAdmin panel and the web page
 
-
+     
 ## 🛠 Tech Stack
 
 - **Backend:** PHP
