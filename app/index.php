@@ -103,9 +103,9 @@
                     <a href="pages/newWallet.php"><button class="px-8 py-4 bg-lime-400 text-black font-black uppercase tracking-wider text-sm rounded-xl hover:bg-lime-300 transition-all transform hover:-translate-y-1 shadow-[0_0_20px_rgba(163,230,53,0.3)]">
                         Create Your Vault
                     </button></a>
-                    <button class="px-8 py-4 bg-slate-900 border border-slate-800 text-white font-bold uppercase tracking-wider text-sm rounded-xl hover:bg-slate-800 hover:border-slate-700 transition-all">
+                    <a href="pages/walletMenu/dashboard.php"><button class="px-8 py-4 bg-slate-900 border border-slate-800 text-white font-bold uppercase tracking-wider text-sm rounded-xl hover:bg-slate-800 hover:border-slate-700 transition-all">
                         Manage your vault
-                    </button>
+                    </button></a>
                 </div>
             </div>
 

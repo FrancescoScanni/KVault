@@ -184,3 +184,47 @@ $errTrans="<div class='fixed top-6 right-6 z-[100] animate-in fade-in slide-in-f
                     
                 </div>
             </div>";
+$succBudget="<div class='fixed top-6 right-6 z-[100] animate-in fade-in slide-in-from-right-4 duration-500'>
+                <div class='bg-slate-900/95 backdrop-blur-md border-r-4 border-emerald-500 p-4 rounded-l-xl shadow-2xl flex items-center gap-4 max-w-sm'>
+                    
+                    <button onclick='this.parentElement.parentElement.remove()' class='text-slate-500 hover:text-white transition-colors order-last ml-2'>
+                        <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12'></path>
+                        </svg>
+                    </button>
+
+                    <div class='text-right'>
+                        <p class='text-white text-xs font-black uppercase tracking-widest leading-none mb-1'>Budget Updated</p>
+                        <p class='text-slate-400 text-[10px] font-medium'>Your budget has been updated successfully.</p>
+                    </div>
+
+                    <div class='text-emerald-500'>
+                        <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'></path>
+                        </svg>
+                    </div>
+                    
+                </div>
+            </div>";
+$errBudget = "<div class='fixed top-6 right-6 z-[100] animate-in fade-in slide-in-from-right-4 duration-500'>
+                <div class='bg-slate-900/95 backdrop-blur-md border-r-4 border-rose-500 p-4 rounded-l-xl shadow-2xl flex items-center gap-4 max-w-sm'>
+                    
+                    <button onclick='this.parentElement.parentElement.remove()' class='text-slate-500 hover:text-white transition-colors order-last ml-2'>
+                        <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12'></path>
+                        </svg>
+                    </button>
+
+                    <div class='text-right'>
+                        <p class='text-white text-xs font-black uppercase tracking-widest leading-none mb-1'>Protocol Error</p>
+                        <p class='text-slate-400 text-[10px] font-medium'>Failed to update budget. Check system logs.</p>
+                    </div>
+
+                    <div class='text-rose-500'>
+                        <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'></path>
+                        </svg>
+                    </div>
+                    
+                </div>
+            </div>";

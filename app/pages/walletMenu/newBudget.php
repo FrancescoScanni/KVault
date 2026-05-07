@@ -6,11 +6,11 @@
     if($_SERVER["REQUEST_METHOD"] === "POST"){
         $wallet = new Wallet();
 
-        $name = $_POST["name"];
+        $category = $_POST["category"];
         $limit = $_POST["limit"];
         $threshold = $_POST["threshold"];
 
-        if($wallet->addBudget($_SESSION["userID"], $name, $limit, $threshold)){
+        if($wallet->addBudget($_SESSION["userID"], $category, $limit, $threshold)){
             $_SESSION["budget_success"] = true;
         } else {
             $_SESSION["budget_success"] = false;
@@ -84,10 +84,17 @@
                 <!-- BUDGET CREATION  -->
                 <form id="budget-form" class="space-y-6" action="newBudget.php" method="POST">
                     
-                    <div class="space-y-2">
-                        <label for="b-name" class="text-xs font-bold uppercase tracking-widest text-slate-400">Target Designation (Name)</label>
-                        <input type="text" name="name" id="b-name" placeholder="e.g. Dining & Groceries" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition-all font-bold">
-                    </div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Category</label>
+                                    <select name="category" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400 transition-colors appearance-none cursor-pointer">
+                                        <option value="" disabled selected>Select...</option>
+                                        <option value="Dining & Groceries">Dining & Groceries</option>
+                                        <option value="Transport & Auto">Transport & Auto</option>
+                                        <option value="Subscriptions">Subscriptions (Leaks)</option>
+                                        <option value="Shopping">Shopping</option>
+                                        <option value="Health & Fitness">Health & Fitness</option>
+                                        <option value="Hobby">Hobby</option>
+                                        <option value="Other">Other</option>
+                                    </select>
 
                     <div class="space-y-2">
                         <label for="b-limit" class="text-xs font-bold uppercase tracking-widest text-slate-400">Monthly Ceiling ($)</label>
@@ -156,47 +163,52 @@
 
     <script>
         const inputs = {
-            name: document.getElementById('b-name'),
+            category: document.querySelector('select[name="category"]'),
             limit: document.getElementById('b-limit'),
-            threshold: document.getElementById('b-threshold')
+            threshold: document.getElementById('b-threshold'),
+            form: document.getElementById('budget-form')
         };
 
         const preview = {
             name: document.getElementById('preview-name'),
             limit: document.getElementById('preview-limit'),
+            spent: document.getElementById('preview-spent'),
             bar: document.getElementById('preview-bar'),
             marker: document.getElementById('preview-marker'),
             status: document.getElementById('preview-status'),
-            thresholdVal: document.getElementById('threshold-val')
+            thresholdVal: document.getElementById('threshold-val'),
+            simText: document.querySelector('.lg\\:block .text-slate-500') 
         };
 
-        // Aggiornamento Live del Testo
-        inputs.name.addEventListener('input', (e) => {
-            preview.name.innerText = e.target.value || "New Target...";
+        inputs.category.addEventListener('change', (e) => {
+            preview.name.innerText = e.target.value;
+            // Effetto feedback visivo sulla preview
+            document.getElementById('preview-card').classList.add('neon-glow');
+            setTimeout(() => document.getElementById('preview-card').classList.remove('neon-glow'), 500);
         });
 
-        // Aggiornamento Live del Limite Monetario
         inputs.limit.addEventListener('input', (e) => {
-            const val = parseFloat(e.target.value) || 0;
-            preview.limit.innerText = val.toFixed(2);
+            const limitVal = parseFloat(e.target.value) || 0;
+            preview.limit.innerText = limitVal.toFixed(2);
             
-            // Simula una spesa al 45% del limite impostato per far vedere la barra che si muove
-            if(val > 0) {
+            const simulatedSpent = limitVal * 0.45;
+            preview.spent.innerText = `$${simulatedSpent.toFixed(2)}`;
+
+            if(limitVal > 0) {
                 preview.bar.style.width = '45%';
                 preview.bar.className = 'bg-lime-400 h-3 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(163,230,53,0.5)]';
             } else {
                 preview.bar.style.width = '0%';
                 preview.bar.className = 'bg-slate-700 h-3 rounded-full transition-all duration-500';
+                preview.spent.innerText = "$0.00";
             }
         });
 
-        // Aggiornamento Live dello Slider (Soglia di Allerta)
         inputs.threshold.addEventListener('input', (e) => {
             const val = e.target.value;
             preview.thresholdVal.innerText = `${val}%`;
             preview.marker.style.left = `${val}%`;
 
-            // Cambia colore del testo in base alla severità
             if (val < 65) {
                 preview.thresholdVal.className = "text-orange-400 font-black text-lg";
                 preview.status.innerText = `Strict Alert at ${val}%`;
@@ -212,32 +224,27 @@
             }
         });
 
-        // Simulazione di salvataggio (Submit del Form)
-        function deployBudget() {
-            const btn = document.querySelector('button[type="submit"]');
+        inputs.form.addEventListener('submit', function(e) {
+            const btn = this.querySelector('button[type="submit"]');
             const originalContent = btn.innerHTML;
             
-            // UI Feedback per il salvataggio
-            btn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Compiling...`;
-            btn.classList.replace('bg-lime-400', 'bg-slate-700');
-            btn.classList.replace('text-black', 'text-white');
-            btn.classList.remove('shadow-[0_0_15px_rgba(163,230,53,0.3)]');
-
-            // Simula latenza di rete
-            setTimeout(() => {
-                btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Deployed Successfully`;
-                btn.classList.replace('bg-slate-700', 'bg-lime-400');
-                btn.classList.replace('text-white', 'text-black');
-                
-                // Ritorno allo stato normale dopo 2 secondi
-                setTimeout(() => {
-                    btn.innerHTML = originalContent;
-                    // Qui, in un'app vera, faresti: window.location.href = 'strategy.html';
-                }, 2000);
-            }, 1500);
-
+            btn.style.pointerEvents = 'none';
             
-        }
+            btn.innerHTML = `
+                <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg> 
+                ESTABLISHING PROTOCOL...
+            `;
+            btn.classList.replace('bg-lime-400', 'bg-slate-800');
+            btn.classList.replace('text-black', 'text-slate-400');
+
+            setTimeout(() => {
+                this.submit();
+            }, 800);
+            
+            e.preventDefault(); 
+        });
     </script>
 </body>
 </html>

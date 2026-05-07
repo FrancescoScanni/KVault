@@ -1,13 +1,19 @@
 <?php
     session_start();
     require_once("../../models/wallet.php");
+    require_once("../../components/warnings.php");
     $wallet = new Wallet();
 
     if(isset($_SESSION["budget_success"]) && $_SESSION["budget_success"] === true){
-        
+        echo $succBudget;
+        $_SESSION["budget_success"] = null;
+    }elseif(isset($_SESSION["budget_success"]) && $_SESSION["budget_success"] === false){
+        echo $errBudget;
+        $_SESSION["budget_success"] = null;
     }else{
-        
     }
+
+
 ?>
 
 
@@ -89,11 +95,31 @@
                             $budgets = $wallet->getBudgets($_SESSION["userID"]);
                             foreach($budgets as $budget) {
                                 $perc=round(($budget['current_spending'] / $budget['monthly_ceiling']) * 100);
-                                echo '<div class="glass-panel border border-slate-800 p-6 rounded-3xl">
+                                $barColor = "bg-lime-400";
+                                $statusText = "On Track";
+                                $textColor = "text-lime-400";
+                                $shadowColor = "rgba(163,230,53,0.5)";
+
+                                if ($perc >= $budget['alert_threshold']) {
+                                    $barColor = "bg-red-500";
+                                    $statusText = "Over Limit";
+                                    $textColor = "text-red-500";
+                                    $shadowColor = "rgba(239,68,68,0.5)";
+                                } elseif ($perc >= 50) {
+                                    $barColor = "bg-orange-500";
+                                    $statusText = "Warning";
+                                    $textColor = "text-orange-500";
+                                    $shadowColor = "rgba(249,115,22,0.5)";
+                                }
+
+                                echo 
+                                    '<div class="glass-panel border border-slate-800 p-6 rounded-3xl">
                                         <div class="flex justify-between items-end mb-4">
                                             <div class="flex items-center gap-4">
                                                 <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center">
-                                                    <svg class="w-5 h-5 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                                    <svg class="w-5 h-5 ' . $textColor . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                                    </svg>
                                                 </div>
                                                 <div>
                                                     <h3 class="font-bold text-white">'. $budget['name'] .'</h3>
@@ -106,20 +132,23 @@
                                             </div>
                                         </div>
                                         <div class="w-full bg-slate-900 rounded-full h-2.5 border border-slate-800 overflow-hidden">
-                                            <div class="bg-lime-400 h-2.5 rounded-full progress-animate shadow-[0_0_10px_rgba(163,230,53,0.5)]" style="width: ' . $perc . '%"></div>
+                                            <div class="' . $barColor . ' h-2.5 rounded-full progress-animate" style="width: ' . ($perc > 100 ? 100 : $perc) . '%; box-shadow: 0 0 10px ' . $shadowColor . ';"></div>
                                         </div>
-                                        <div class="mt-2 text-right text-xs font-bold text-lime-400">' . ($budget['monthly_ceiling'] > 0 ? $perc : 0) . '% Used - On Track</div>
-                                    </div> ';
+                                        <div class="mt-3 flex justify-between items-center">
+                                            <a href="deleteBudget.php?id=' . $budget['id'] . '" onclick="return confirm(\'Terminate this budget protocol?\')" class="text-[10px] font-black uppercase tracking-tighter text-slate-600 hover:text-red-500 transition-colors flex items-center gap-1 group">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                Delete
+                                            </a>
+                                            <div class="text-xs font-bold ' . $textColor . '">' . ($budget['monthly_ceiling'] > 0 ? $perc : 0) . '% Used - ' . $statusText . '</div>
+                                        </div>
+                                    </div>';
 
+                            }
+                            if(empty($budgets)){
+                                echo '<p class="text-sm text-slate-500 italic">No budgets set. Create one to start tracking your spending!</p>';
                             }
                         ?>
                         
-                        
-
-                        
-
-                        
-
                     </div>
                 </div>
 
@@ -129,16 +158,35 @@
                         <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-lime-400/10 rounded-full blur-2xl pointer-events-none"></div>
                         <h2 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Vault Runway</h2>
                         <div class="flex items-end gap-2 mb-1">
-                            <span class="text-5xl font-black tracking-tighter text-white">45</span>
+                            <?php
+                                $runway = $wallet->getVaultRunway($_SESSION["userID"]);
+                                if($runway >= 999) {
+                                    echo '<span class="text-5xl font-black tracking-tighter text-white">∞</span>';
+                                } else {
+                                    echo '<span class="text-5xl font-black tracking-tighter text-white">'. $runway .'</span>';
+                                }
+                            ?>
                             <span class="text-lg font-bold text-slate-400 mb-1">Days</span>
                         </div>
-                        <p class="text-xs text-slate-400 leading-relaxed mt-2">At your current 30-day burn rate, your combined vault liquidity will last 45 days assuming zero incoming cash flow.</p>
+                        <p class="text-xs text-slate-400 leading-relaxed mt-2">At your current 30-day burn rate, your combined vault liquidity will last <?php echo $runway; ?> days assuming zero incoming cash flow.</p>
                         <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-lime-400/10 border border-lime-400/20">
-                            <div class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></div>
-                            <span class="text-xs font-bold text-lime-400 uppercase tracking-wider">Status: Stable</span>
+                            <?php
+                                if($runway >= 999) {
+                                    echo '<div class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></div>
+                                    <span class="text-xs font-bold text-lime-400 uppercase tracking-wider">Status: Infinite</span>';
+                                } elseif ($runway >= 60) {
+                                    echo '<div class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></div>
+                                    <span class="text-xs font-bold text-lime-400 uppercase tracking-wider">Status: Stable</span>';
+                                } elseif ($runway >= 30) {
+                                    echo '<div class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></div>
+                                    <span class="text-xs font-bold text-orange-500 uppercase tracking-wider">Status: Warning</span>';
+                                } else {
+                                    echo '<div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                                    <span class="text-xs font-bold text-red-500 uppercase tracking-wider">Status: Critical</span>';
+                                }
+                            ?>
                         </div>
                     </div>
-
 
 
                     <!-- ACTIVE LEAKS  -->
@@ -147,46 +195,32 @@
                             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                             Active Leaks
                         </h3>
-                        <p class="text-xs text-slate-500 mb-6">Recurring payments silently draining the vault.</p>
+                        <p class="text-xs text-slate-500 mb-6">Recurring transactions silently draining the vault.</p>
                         
                         <div class="space-y-4">
-                            <div class="flex justify-between items-center p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded bg-black flex items-center justify-center text-red-500 font-black text-xs border border-slate-800">N</div>
-                                    <div>
-                                        <p class="text-sm font-bold text-white">Netflix</p>
-                                        <p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Renews 15th</p>
-                                    </div>
-                                </div>
-                                <span class="text-sm font-bold text-slate-300">-$15.99</span>
-                            </div>
 
-                            <div class="flex justify-between items-center p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded bg-black flex items-center justify-center text-green-500 font-black text-xs border border-slate-800">S</div>
-                                    <div>
-                                        <p class="text-sm font-bold text-white">Spotify</p>
-                                        <p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Renews 22nd</p>
-                                    </div>
-                                </div>
-                                <span class="text-sm font-bold text-slate-300">-$10.99</span>
-                            </div>
-
-                            <div class="flex justify-between items-center p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded bg-black flex items-center justify-center text-white font-black text-xs border border-slate-800">G</div>
-                                    <div>
-                                        <p class="text-sm font-bold text-white">Gym Membership</p>
-                                        <p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Renews 01st</p>
-                                    </div>
-                                </div>
-                                <span class="text-sm font-bold text-slate-300">-$45.00</span>
-                            </div>
+                            <?php
+                                $leaks=$wallet->getLeaks($_SESSION["userID"]);
+                                $totalDrain=0;
+                                foreach($leaks as $leak){
+                                    $totalDrain+=$leak['totale_speso'];
+                                    echo '<div class="flex justify-between items-center p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 rounded bg-black flex items-center justify-center text-red-500 font-black text-xs border border-slate-800">N</div>
+                                                <div>
+                                                    <p class="text-sm font-bold text-white"> '. $leak['description'] .'</p>
+                                                    <p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Renews '.$leak['ripetizioni'] .'</p>
+                                                </div>
+                                            </div>
+                                            <span class="text-sm font-bold text-slate-300">-'. $leak['totale_speso'] .'</span>
+                                        </div>';
+                                }
+                            ?>
                         </div>
 
                         <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center">
                             <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Monthly Drain</span>
-                            <span class="text-lg font-black text-white">$71.98</span>
+                            <span class="text-lg font-black text-white">$<?php echo number_format($totalDrain, 2); ?></span>
                         </div>
                     </div>
                 </div>

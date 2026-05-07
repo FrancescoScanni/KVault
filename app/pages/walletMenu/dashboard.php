@@ -87,7 +87,7 @@
             <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h1 class="text-4xl font-black uppercase italic tracking-tight text-white mb-2">Vault <span class="text-lime-400">Overview</span></h1>
-                    <p class="text-slate-400">Global net worth and live transaction feed.</p>
+                    <p class="text-slate-400">Global net worth and live transaction feed of the linked assets.</p>
                 </div>
                 <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-lime-400/10 border border-lime-400/20">
                     <span class="relative flex h-2 w-2">

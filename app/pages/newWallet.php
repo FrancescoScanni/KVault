@@ -116,10 +116,13 @@
                                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Category</label>
                                     <select name="category" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400 transition-colors appearance-none cursor-pointer">
                                         <option value="" disabled selected>Select...</option>
-                                        <option value="food">Dining & Groceries</option>
-                                        <option value="transport">Transport & Auto</option>
-                                        <option value="subs">Subscriptions (Leaks)</option>
-                                        <option value="shopping">Shopping</option>
+                                        <option value="Dining & Groceries">Dining & Groceries</option>
+                                        <option value="Transport & Auto">Transport & Auto</option>
+                                        <option value="Subscriptions">Subscriptions (Leaks)</option>
+                                        <option value="Shopping">Shopping</option>
+                                        <option value="Health & Fitness">Health & Fitness</option>
+                                        <option value="Hobby">Hobby</option>
+                                        <option value="Other">Other</option>
                                     </select>
                                 </div>
                                 <div>
