@@ -1,3 +1,8 @@
+<?php
+    session_start();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,17 +39,28 @@
                 </div>
                 
                 <div class="hidden md:flex items-center gap-8 text-sm font-bold text-slate-400 uppercase tracking-widest">
-                    <a href="#" class="hover:text-lime-400 transition-colors">Features</a>
-                    <a href="#" class="hover:text-lime-400 transition-colors">Security</a>
-                    <a href="#" class="text-lime-400 transition-colors">Contact</a>
+                    <a href="../index.php" class="hover:text-lime-400 transition-colors">Features</a>
+                    <a href="security.php" class="hover:text-lime-400 transition-colors">Security</a>
+                    <a href="https://github.com/FrancescoScanni/KVault.git" class="hover:text-lime-400 transition-colors">Repository</a>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <a href="#" class="hidden sm:block text-sm font-bold text-white hover:text-lime-400 transition-colors uppercase tracking-wider">Log In</a>
-                    <a href="#" class="px-6 py-2.5 bg-lime-400 text-black rounded-lg text-sm font-black uppercase tracking-wider hover:bg-lime-300 transition-all transform hover:-translate-y-0.5 shadow-[0_0_15px_rgba(163,230,53,0.2)]">
-                        Get Started
-                    </a>
-                </div>
+                <?php
+                    if($_SESSION["logged"]){
+                        echo '<div class="flex items-center gap-4">
+                                <a href="#" class="hidden sm:block text-sm font-bold text-white hover:text-lime-400 transition-colors uppercase tracking-wider">Logged in</a>
+                                <a href="logOut.php" onclick="return confirm(`If you sure you want to log out, click OK.`)" class="px-6 py-2.5 bg-lime-400 text-black rounded-lg text-sm font-black uppercase tracking-wider hover:bg-lime-300 transition-all transform hover:-translate-y-0.5 shadow-[0_0_15px_rgba(163,230,53,0.2)]">
+                                    Logout
+                                </a>
+                            </div>';
+                    }else{
+                        echo '<div class="flex items-center gap-4">
+                                <a href="logIn.php" class="hidden sm:block text-sm font-bold text-white hover:text-lime-400 transition-colors uppercase tracking-wider">Log In</a>
+                                <a href="signUp.php" class="px-6 py-2.5 bg-lime-400 text-black rounded-lg text-sm font-black uppercase tracking-wider hover:bg-lime-300 transition-all transform hover:-translate-y-0.5 shadow-[0_0_15px_rgba(163,230,53,0.2)]">
+                                    Get Started
+                                </a>
+                            </div>';
+                    }
+                ?>
             </div>
         </div>
     </nav>
@@ -92,10 +108,10 @@
                         </svg>
                     </div>
                     <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Enterprise Hotline</h3>
-                    <p class="text-xl font-bold text-white group-hover:text-lime-400 transition-colors">+1 (555) 019-8234</p>
+                    <p class="text-xl font-bold text-white group-hover:text-lime-400 transition-colors">+(39) 350 987 4687</p>
                 </a>
 
-                <a href="#" target="_blank" class="group block p-8 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-lime-400/50 hover:bg-slate-900 transition-all backdrop-blur-sm relative overflow-hidden">
+                <a href="https://www.linkedin.com/in/francesco-scanni-441605351/" target="_blank" class="group block p-8 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-lime-400/50 hover:bg-slate-900 transition-all backdrop-blur-sm relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-lime-400/5 rounded-full blur-2xl group-hover:bg-lime-400/10 transition-colors"></div>
                     <div class="w-14 h-14 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center mb-6 group-hover:shadow-[0_0_15px_rgba(163,230,53,0.2)] group-hover:border-lime-400/30 transition-all">
                         <svg class="w-6 h-6 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -105,18 +121,18 @@
                         </svg>
                     </div>
                     <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Corporate News</h3>
-                    <p class="text-xl font-bold text-white group-hover:text-lime-400 transition-colors">linkedin.com/company/kvault</p>
+                    <p class="text-xl font-bold text-white group-hover:text-lime-400 transition-colors">linkedin.com/Francesco Scanni</p>
                 </a>
 
-                <a href="#" target="_blank" class="group block p-8 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-lime-400/50 hover:bg-slate-900 transition-all backdrop-blur-sm relative overflow-hidden">
+                <a href="https://github.com/FrancescoScanni" target="_blank" class="group block p-8 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-lime-400/50 hover:bg-slate-900 transition-all backdrop-blur-sm relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-lime-400/5 rounded-full blur-2xl group-hover:bg-lime-400/10 transition-colors"></div>
                     <div class="w-14 h-14 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center mb-6 group-hover:shadow-[0_0_15px_rgba(163,230,53,0.2)] group-hover:border-lime-400/30 transition-all">
                         <svg class="w-6 h-6 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
                         </svg>
                     </div>
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Open Source & APIs</h3>
-                    <p class="text-xl font-bold text-white group-hover:text-lime-400 transition-colors">github.com/kvault-hq</p>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Open Source & ownership</h3>
+                    <p class="text-xl font-bold text-white group-hover:text-lime-400 transition-colors">github.com/FrancescoScanni</p>
                 </a>
 
             </div>

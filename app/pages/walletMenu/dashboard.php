@@ -2,24 +2,21 @@
     session_start();
     include_once("../../models/wallet.php");
     
-    
     $wallet = new Wallet();
     //total balance and wallets
     $totalBalance = number_format($wallet->getTotalBalance($_SESSION["userID"]), 2, ',', '.');
     $totalIncome = $wallet->getTotalIncome($_SESSION["userID"]);
     $totalExpense = $wallet->getTotalExpense($_SESSION["userID"]);
-    $wallets=$wallet->getWallets($_SESSION["userID"]);
+    $wallets = $wallet->getWallets($_SESSION["userID"]);
 
     //last transactions
-    $lastTransactions= $wallet->lastTransactions(($_SESSION["userID"]));
-    $res=$wallet->getName($_SESSION['userID']);
+    $lastTransactions = $wallet->lastTransactions(($_SESSION["userID"]));
+    $res = $wallet->getName($_SESSION['userID']);
 
-    if($_SESSION["logged"]==false){
+    if($_SESSION["logged"] == false){
         header("Location: ../logIn.php");
         exit;
     }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -74,7 +71,7 @@
                     <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 </div>
                 <div class="flex-1">
-                    <div class="text-xs font-bold text-white uppercase"><?php  echo $res; ?></div>
+                    <div class="text-xs font-bold text-white uppercase"><?php echo $res; ?></div>
                     <div class="text-[10px] text-lime-400 font-bold tracking-wider">Online</div>
                 </div>
             </div>
@@ -148,51 +145,62 @@
                     <div id="wallets-container" class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="glass-panel border border-slate-800 p-8 rounded-3xl text-center md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <?php
-                                $total=0;
-                                foreach($wallets as $w){
-                                    $total += (float)$w["initial_balance"];
-                                }
-                                foreach($wallets as $w){
-                                    $rawAmount = $w["initial_balance"];
-                                    $formattedForSplit = number_format($rawAmount, 2, ',', '');
-                                    $parts = explode(',', $formattedForSplit);
-                                    $integers = number_format((float)$parts[0], 0, '', '.');
-                                    $decimals = $parts[1];
-                                    
-                                    echo '<div class="glass-panel border border-slate-800 p-6 rounded-3xl hover:border-slate-700 transition-all duration-300 group shadow-lg max-w-[400px] max-h-[200px] ">
-                                                <div class="flex justify-between items-start mb-6">
-                                                    <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:border-slate-600 transition-colors">
-                                                        <svg class="w-5 h-5 text-slate-500 group-hover:text-lime-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                                                        </svg>
+                                if (empty($wallets)) {
+                                    echo '<div class="md:col-span-2 py-10 flex flex-col items-center justify-center space-y-4">
+                                            <div class="w-16 h-16 rounded-2xl bg-slate-900 flex items-center justify-center border border-slate-800">
+                                                <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            </div>
+                                            <p class="text-slate-500 font-bold uppercase tracking-widest text-sm italic">Add one or more wallets to start tracking...</p>
+                                            <a href="../newWallet.php" class="text-lime-400 text-xs font-black uppercase tracking-tighter hover:underline">Create your first asset &rarr;</a>
+                                          </div>';
+                                } else {
+                                    $total=0;
+                                    foreach($wallets as $w){
+                                        $total += (float)$w["initial_balance"];
+                                    }
+                                    $total = $total == 0 ? 1 : $total; // Avoid division by zero
+                                    foreach($wallets as $w){
+                                        $rawAmount = $w["initial_balance"];
+                                        $formattedForSplit = number_format($rawAmount, 2, ',', '');
+                                        $parts = explode(',', $formattedForSplit);
+                                        $integers = number_format((float)$parts[0], 0, '', '.');
+                                        $decimals = $parts[1];
+                                        
+                                        echo '<div class="glass-panel border border-slate-800 p-6 rounded-3xl hover:border-slate-700 transition-all duration-300 group shadow-lg">
+                                                    <div class="flex justify-between items-start mb-6">
+                                                        <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:border-slate-600 transition-colors">
+                                                            <svg class="w-5 h-5 text-slate-500 group-hover:text-lime-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                                            </svg>
+                                                        </div>
+
+                                                        <div class="text-right">
+                                                            <h3 class="text-2xl font-black text-white uppercase tracking-tighter leading-none group-hover:text-lime-400 transition-colors">
+                                                                ' . $w["name"] . '
+                                                            </h3>
+                                                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Vault</span>
+                                                        </div>
                                                     </div>
 
-                                                    <div class="text-right">
-                                                        <h3 class="text-2xl font-black text-white uppercase tracking-tighter leading-none group-hover:text-lime-400 transition-colors">
-                                                            ' . $w["name"] . '
-                                                        </h3>
-                                                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Vault</span>
+                                                    <div class="flex justify-between items-end mb-4">
+                                                        <div>
+                                                            <span class="text-3xl text-auto font-black text-white block leading-none mt-[5px]">
+                                                                <span class="text-lg font-bold opacity-30">$</span> ' . $integers . '<span class="text-lg font-bold opacity-30">.' . $decimals . '</span>
+                                                            </span>
+                                                            <p class="text-[10px] text-slate-500 font-bold mt-1 italic">Total available balance</p>
+                                                        </div>
+                                                        
+                                                        <div class="text-right">
+                                                            <span class="text-xs font-black text-slate-400"> ' . round((float)$w["initial_balance"]/$total * 100, 1) . '%</span>
+                                                        </div>
                                                     </div>
-                                                </div>
 
-                                                <div class="flex justify-between items-end mb-4">
-                                                    <div>
-                                                        <span class="text-3xl text-auto font-black text-white block leading-none mt-[5px]">
-                                                            <span class="text-lg font-bold opacity-30">$</span> ' . $integers . '<span class="text-lg font-bold opacity-30">.' . $decimals . '</span>
-                                                        </span>
-                                                        <p class="text-[10px] text-slate-500 font-bold mt-1 italic">Total available balance</p>
+                                                    <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-white/5">
+                                                        <div class="bg-slate-700 h-full rounded-full group-hover:bg-gradient-to-r group-hover:from-lime-500 group-hover:to-emerald-500 transition-all duration-700" 
+                                                            style="width: ' . round((float)$w["initial_balance"]/$total * 100, 1) . '%"></div>
                                                     </div>
-                                                    
-                                                    <div class="text-right">
-                                                        <span class="text-xs font-black text-slate-400"> ' . round((float)$w["initial_balance"]/$total * 100, 1) . '%</span>
-                                                    </div>
-                                                </div>
-
-                                                <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-white/5">
-                                                    <div class="bg-slate-700 h-full rounded-full group-hover:bg-gradient-to-r group-hover:from-lime-500 group-hover:to-emerald-500 transition-all duration-700" 
-                                                        style="width: ' . round((float)$w["initial_balance"]/$total * 100, 1) . '%"></div>
-                                                </div>
-                                            </div>';
+                                                </div>';
+                                    }
                                 }
                             ?>
                         </div>
@@ -206,16 +214,24 @@
                     </h2>
                     
                     <div class=" border border-slate-800 p-2 rounded-3xl h-[400px] ">
-                        <div id="transactions-container" class="space-y-1 flex flex-col jusstify-end h-full overflow-y-auto px-2 py-2 gap-2">
+                        <div id="transactions-container" class="space-y-1 flex flex-col h-full overflow-y-auto px-2 py-2 gap-2">
                             
                             <?php
+                                if (empty($lastTransactions)) {
+                                    echo '<div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
+                                            <div class="w-12 h-12 rounded-full border border-dashed border-slate-800 flex items-center justify-center">
+                                                <svg class="w-6 h-6 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                                            </div>
+                                            <p class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">No transactions detected in this vault</p>
+                                          </div>';
+                                } else {
                                     foreach($lastTransactions as $last){
                                         $sign = $last["income"] == 1 ? '+' : '-';
-                                        $colorClass = "";
+                                        $colorClass = $last["income"] == 1 ? 'text-lime-400' : 'text-white';
                                         echo '<div class="p-3 px-4 rounded-2xl hover:bg-slate-900/50 transition-colors flex justify-between items-center group border border-slate-800">
-                                                <div class="flex items-center gap-12 pt-2">
-                                                    <div class="w-12 h-12 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:border-slate-700">
-                                                        <svg class="w-4 h-4 ' . $colorClass . '" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' . ($last["income"] == 1 ? 'M19 14l-7 7m0 0l-7-7m7 7V3' : 'M5 10l7-7m0 0l7 7m-7-7v18') . '"></path></svg>
+                                                <div class="flex items-center gap-4 pt-2">
+                                                    <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:border-slate-700">
+                                                        <svg class="w-4 h-4 ' . ($last["income"] == 1 ? 'text-lime-400' : 'text-slate-500') . '" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' . ($last["income"] == 1 ? 'M19 14l-7 7m0 0l-7-7m7 7V3' : 'M5 10l7-7m0 0l7 7m-7-7v18') . '"></path></svg>
                                                     </div>
                                                     <div>
                                                         <p class="text-sm font-bold text-white">' . $last["name"] . '</p>
@@ -225,6 +241,7 @@
                                                 <span class="font-black text-sm ' . $colorClass . '">' . $sign . '$' . number_format($last["amount"], 2, ',', '.') . '</span>
                                             </div>'; 
                                     }
+                                }
                             ?>        
                         </div>
                     </div>
@@ -233,128 +250,5 @@
             </div>
         </div>
     </main>
-
-    <script>
-        /*
-        // 1. STATO DELL'APP (Modificabile)
-        // Cambia i saldi dei wallet e le transazioni. La UI calcolerà automaticamente i totali e le barre.
-        const dashboardState = {
-            wallets: [
-                { id: "w1", name: "Revolut Main", balance: 4250.00, type: "digital" },
-                { id: "w2", name: "Physical Safe", balance: 850.00, type: "fiat" },
-                { id: "w3", name: "Binance Cold", balance: 6400.00, type: "crypto" }
-            ],
-            currentMonth: {
-                income: <?php echo $totalIncome; ?>,
-                expenses: <?php echo $totalExpense; ?>
-            },
-            recentTransactions: [
-                { desc: "Freelance Client X", amount: 1200.00, type: "IN", date: "Today", wallet: "Revolut Main" },
-                { desc: "AWS Server Host", amount: -45.00, type: "OUT", date: "Yesterday", wallet: "Revolut Main" },
-                { desc: "Groceries", amount: -120.50, type: "OUT", date: "Apr 24", wallet: "Physical Safe" },
-                { desc: "ETH Purchase", amount: -500.00, type: "OUT", date: "Apr 22", wallet: "Revolut Main" },
-                { desc: "Crypto Yield", amount: 25.00, type: "IN", date: "Apr 20", wallet: "Binance Cold" },
-                { desc: "Dining Out", amount: -65.00, type: "OUT", date: "Apr 18", wallet: "Revolut Main" }
-            ]
-        };
-
-        // Utility Formattazione Valuta
-        const formatMoney = (amount) => {
-            return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        };
-
-        // 2. INIZIALIZZAZIONE
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                renderDashboard(dashboardState);
-            }, 500); // Finta latenza di decrittazione
-        });
-
-        // 3. MOTORE DI RENDER
-        function renderDashboard(state) {
-            
-            // --- MATEMATICA E TOTALI ---
-            // Il totale è calcolato rigorosamente sommando i wallet, non è un numero a caso.
-            const calculatedTotal = state.wallets.reduce((sum, wallet) => sum + wallet.balance, 0);
-            
-            // Aggiorna il bilancio principale
-            document.getElementById('total-balance').innerText = formatMoney(calculatedTotal);
-            
-            // Aggiorna Entrate/Uscite
-            document.getElementById('total-income').innerText = `$${formatMoney(state.currentMonth.income)}`;
-            document.getElementById('total-expense').innerText = `$${formatMoney(state.currentMonth.expenses)}`;
-            
-            // Calcola la larghezza delle barre di Cashflow
-            const maxCashflow = Math.max(state.currentMonth.income, state.currentMonth.expenses);
-            const incPercent = (state.currentMonth.income / maxCashflow) * 100;
-            const expPercent = (state.currentMonth.expenses / maxCashflow) * 100;
-            
-            document.getElementById('bar-income').style.width = `${incPercent}%`;
-            document.getElementById('bar-expense').style.width = `${expPercent}%`;
-
-
-            // --- RENDER WALLETS ---
-            const walletsContainer = document.getElementById('wallets-container');
-            walletsContainer.innerHTML = state.wallets.map(w => {
-                const percentage = ((w.balance / calculatedTotal) * 100).toFixed(1);
-                
-                // Icone basate sul tipo
-                let iconSVG = '';
-                if(w.type === 'crypto') {
-                    iconSVG = `<svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>`;
-                } else if(w.type === 'fiat') {
-                    iconSVG = `<svg class="w-5 h-5 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`;
-                } else {
-                    iconSVG = `<svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>`;
-                }
-
-                return `
-                <div class="glass-panel border border-slate-800 p-6 rounded-3xl hover:border-slate-700 transition-colors group">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:border-slate-600 transition-colors">
-                            ${iconSVG}
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xl font-black text-white block">$${formatMoney(w.balance)}</span>
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">${percentage}% of Vault</span>
-                        </div>
-                    </div>
-                    <h3 class="font-bold text-slate-300 text-sm mb-3">${w.name}</h3>
-                    <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
-                        <div class="bg-slate-600 h-1.5 rounded-full animate-width group-hover:bg-lime-400 transition-colors" style="width: ${percentage}%"></div>
-                    </div>
-                </div>
-                `;
-            }).join('');
-
-
-            // --- RENDER TRANSAZIONI ---
-            const txContainer = document.getElementById('transactions-container');
-            txContainer.innerHTML = state.recentTransactions.map(tx => {
-                const isIncome = tx.type === 'IN';
-                const colorClass = isIncome ? 'text-lime-400' : 'text-slate-300';
-                const sign = isIncome ? '+' : '';
-                const txIcon = isIncome 
-                    ? `<svg class="w-4 h-4 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>`
-                    : `<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>`;
-
-                return `
-                <div class="p-3 rounded-2xl hover:bg-slate-900/50 transition-colors flex justify-between items-center group">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:border-slate-700">
-                            ${txIcon}
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-white">${tx.desc}</p>
-                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">${tx.date} • ${tx.wallet}</p>
-                        </div>
-                    </div>
-                    <span class="font-black text-sm ${colorClass}">${sign}$${formatMoney(Math.abs(tx.amount))}</span>
-                </div>
-                `;
-            }).join('');
-        }
-        */
-    </script>
 </body>
 </html>

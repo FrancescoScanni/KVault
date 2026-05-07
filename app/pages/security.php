@@ -1,3 +1,7 @@
+<?php
+    session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,6 +19,44 @@
     </style>
 </head>
 <body class="text-white selection:bg-lime-400 selection:text-black antialiased">
+    <nav class=" w-full z-50 glass-panel border-b border-slate-800/50">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="../index.php">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-lime-400 rounded-xl rotate-3 flex items-center justify-center shadow-[0_0_15px_rgba(163,230,53,0.3)]">
+                            <span class="text-black font-black text-2xl leading-none -rotate-3 uppercase">K</span>
+                        </div>
+                        <span class="text-2xl font-black uppercase tracking-tighter">KVault</span>
+                    </div>
+                </a>
+                
+                <div class="hidden md:flex items-center gap-8 text-sm font-bold text-slate-400 uppercase tracking-widest">
+                    <a href="../index.php" class="hover:text-lime-400 transition-colors">Features</a>
+                    <a href="security.php" class="hover:text-lime-400 transition-colors">Security</a>
+                    <a href="https://github.com/FrancescoScanni/KVault.git" class="hover:text-lime-400 transition-colors">Repository</a>
+                </div>
+
+                <?php
+                    if($_SESSION["logged"]){
+                        echo '<div class="flex items-center gap-4">
+                                <a href="#" class="hidden sm:block text-sm font-bold text-white hover:text-lime-400 transition-colors uppercase tracking-wider">Logged in</a>
+                                <a href="logOut.php" onclick="return confirm(`If you sure you want to log out, click OK.`)" class="px-6 py-2.5 bg-lime-400 text-black rounded-lg text-sm font-black uppercase tracking-wider hover:bg-lime-300 transition-all transform hover:-translate-y-0.5 shadow-[0_0_15px_rgba(163,230,53,0.2)]">
+                                    Logout
+                                </a>
+                            </div>';
+                    }else{
+                        echo '<div class="flex items-center gap-4">
+                                <a href="logIn.php" class="hidden sm:block text-sm font-bold text-white hover:text-lime-400 transition-colors uppercase tracking-wider">Log In</a>
+                                <a href="signUp.php" class="px-6 py-2.5 bg-lime-400 text-black rounded-lg text-sm font-black uppercase tracking-wider hover:bg-lime-300 transition-all transform hover:-translate-y-0.5 shadow-[0_0_15px_rgba(163,230,53,0.2)]">
+                                    Get Started
+                                </a>
+                            </div>';
+                    }
+                ?>
+            </div>
+        </div>
+    </nav>
 
     <section class="relative py-32 overflow-hidden flex items-center justify-center min-h-screen">
         
