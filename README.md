@@ -2,6 +2,17 @@
 
 A PHP-based personal finance tracker web app integrated with a MySQL database and Tailwind CSS. It allows users to manage virtual wallets, track income and expenses, monitor money transactions, and get a clear overview of their financial balance through an intuitive and responsive interface. Read the "setup" section to begin!!!
 
+## ⚙️ Setup
+
+# Online (simulation.txt)
+  1. Just click on the Demo link
+  2. Start fresh by creating a new account from scratch exploring all the possible features
+  3. **Optional:** Use the credentials in `simulation.txt` to load a pre-populated account prototype and explore the app with existing data.
+# Self-hosted
+  1. Clone this repository on your editor
+  2. Run the *docker compose* file in the terminal
+  3. Access the phpMyAdmin panel and the web page
+
 ## 🛠 Tech Stack
 
 - **Backend:** PHP
@@ -25,8 +36,3 @@ This project was developed with the support of advanced AI models:
 - **Vault Runway:** Predictive calculation of liquidity based on 30-day burn rates.
 - **Cyber-Vault UI:** Dark-mode, glass-morphism interface for a high-tech financial experience.
 
-## ⚙️ Setup
-
-1. Just click on the Demo link
-2. Start fresh by creating a new account from scratch exploring all the possible features
-3. **Optional:** Use the credentials in `simulation.txt` to load a pre-populated account prototype and explore the app with existing data.
