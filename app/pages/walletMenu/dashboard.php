@@ -2,11 +2,17 @@
     session_start();
     include_once("../../models/wallet.php");
     
+    
     $wallet = new Wallet();
+    //total balance and wallets
     $totalBalance = number_format($wallet->getTotalBalance($_SESSION["userID"]), 2, ',', '.');
     $totalIncome = $wallet->getTotalIncome($_SESSION["userID"]);
     $totalExpense = $wallet->getTotalExpense($_SESSION["userID"]);
     $wallets=$wallet->getWallets($_SESSION["userID"]);
+
+    //last transactions
+    $lastTransactions= $wallet->lastTransactions(($_SESSION["userID"]));
+    $res=$wallet->getName($_SESSION['userID']);
 
     if($_SESSION["logged"]==false){
         header("Location: ../logIn.php");
@@ -68,7 +74,7 @@
                     <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 </div>
                 <div class="flex-1">
-                    <div class="text-xs font-bold text-white uppercase">Operative_01</div>
+                    <div class="text-xs font-bold text-white uppercase"><?php  echo $res; ?></div>
                     <div class="text-[10px] text-lime-400 font-bold tracking-wider">Online</div>
                 </div>
             </div>
@@ -112,7 +118,7 @@
                                 <span id="total-income" class="text-white">$ <?php echo number_format($totalIncome, 2, ',', '.'); ?> </span>
                             </div>
                             <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
-                                <div id="bar-income" class="bg-lime-400 h-1.5 rounded-full animate-width" style="width: 0%"></div>
+                                <div id="bar-income" class="bg-lime-400 h-1.5 rounded-full animate-width" style="width: <?php echo $totalIncome > 0 ? ($totalIncome / ($totalIncome + $totalExpense)) * 100 : 0; ?>%"></div>
                             </div>
                         </div>
                         <div>
@@ -121,7 +127,7 @@
                                 <span id="total-expense" class="text-white">$ <?php echo number_format($totalExpense, 2, ',', '.'); ?> </span>
                             </div>
                             <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
-                                <div id="bar-expense" class="bg-red-500 h-1.5 rounded-full animate-width" style="width: 0%"></div>
+                                <div id="bar-expense" class="bg-red-500 h-1.5 rounded-full animate-width" style="width: <?php echo $totalExpense > 0 ? ($totalExpense / ($totalIncome + $totalExpense)) * 100 : 0; ?>%"></div>
                             </div>
                         </div>
                     </div>
@@ -147,7 +153,11 @@
                                     $total += (float)$w["initial_balance"];
                                 }
                                 foreach($wallets as $w){
-
+                                    $rawAmount = $w["initial_balance"];
+                                    $formattedForSplit = number_format($rawAmount, 2, ',', '');
+                                    $parts = explode(',', $formattedForSplit);
+                                    $integers = number_format((float)$parts[0], 0, '', '.');
+                                    $decimals = $parts[1];
                                     
                                     echo '<div class="glass-panel border border-slate-800 p-6 rounded-3xl hover:border-slate-700 transition-all duration-300 group shadow-lg max-w-[400px] max-h-[200px] ">
                                                 <div class="flex justify-between items-start mb-6">
@@ -168,7 +178,7 @@
                                                 <div class="flex justify-between items-end mb-4">
                                                     <div>
                                                         <span class="text-3xl text-auto font-black text-white block leading-none mt-[5px]">
-                                                            <span class="text-lg font-bold opacity-30">$</span> ' . $w["initial_balance"] . '
+                                                            <span class="text-lg font-bold opacity-30">$</span> ' . $integers . '<span class="text-lg font-bold opacity-30">.' . $decimals . '</span>
                                                         </span>
                                                         <p class="text-[10px] text-slate-500 font-bold mt-1 italic">Total available balance</p>
                                                     </div>
@@ -195,9 +205,28 @@
                         Decrypted Feed
                     </h2>
                     
-                    <div class="glass-panel border border-slate-800 p-2 rounded-3xl h-[400px] overflow-y-auto">
-                        <div id="transactions-container" class="space-y-1">
-                            </div>
+                    <div class=" border border-slate-800 p-2 rounded-3xl h-[400px] ">
+                        <div id="transactions-container" class="space-y-1 flex flex-col jusstify-end h-full overflow-y-auto px-2 py-2 gap-2">
+                            
+                            <?php
+                                    foreach($lastTransactions as $last){
+                                        $sign = $last["income"] == 1 ? '+' : '-';
+                                        $colorClass = "";
+                                        echo '<div class="p-3 px-4 rounded-2xl hover:bg-slate-900/50 transition-colors flex justify-between items-center group border border-slate-800">
+                                                <div class="flex items-center gap-12 pt-2">
+                                                    <div class="w-12 h-12 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:border-slate-700">
+                                                        <svg class="w-4 h-4 ' . $colorClass . '" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' . ($last["income"] == 1 ? 'M19 14l-7 7m0 0l-7-7m7 7V3' : 'M5 10l7-7m0 0l7 7m-7-7v18') . '"></path></svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-white">' . $last["name"] . '</p>
+                                                        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">' . date("M d, Y", strtotime($last["transaction_date"])) . '</p>
+                                                    </div>
+                                                </div>
+                                                <span class="font-black text-sm ' . $colorClass . '">' . $sign . '$' . number_format($last["amount"], 2, ',', '.') . '</span>
+                                            </div>'; 
+                                    }
+                            ?>        
+                        </div>
                     </div>
                 </div>
 

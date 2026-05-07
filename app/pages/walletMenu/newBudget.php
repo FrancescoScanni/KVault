@@ -1,3 +1,25 @@
+<?php
+    session_start();
+    require_once("../../models/wallet.php");
+    require_once("../../components/warnings.php");
+
+    if($_SERVER["REQUEST_METHOD"] === "POST"){
+        $wallet = new Wallet();
+
+        $name = $_POST["name"];
+        $limit = $_POST["limit"];
+        $threshold = $_POST["threshold"];
+
+        if($wallet->addBudget($_SESSION["userID"], $name, $limit, $threshold)){
+            $_SESSION["budget_success"] = true;
+        } else {
+            $_SESSION["budget_success"] = false;
+        }
+        header("Location: strategy.php");
+        exit;
+    }
+?>  
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,18 +81,19 @@
                     <p class="text-slate-400 text-sm">Define the limits and alert thresholds for this specific cash flow.</p>
                 </div>
 
-                <form id="budget-form" class="space-y-6" onsubmit="event.preventDefault(); deployBudget();">
+                <!-- BUDGET CREATION  -->
+                <form id="budget-form" class="space-y-6" action="newBudget.php" method="POST">
                     
                     <div class="space-y-2">
                         <label for="b-name" class="text-xs font-bold uppercase tracking-widest text-slate-400">Target Designation (Name)</label>
-                        <input type="text" id="b-name" placeholder="e.g. Dining & Groceries" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition-all font-bold">
+                        <input type="text" name="name" id="b-name" placeholder="e.g. Dining & Groceries" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition-all font-bold">
                     </div>
 
                     <div class="space-y-2">
                         <label for="b-limit" class="text-xs font-bold uppercase tracking-widest text-slate-400">Monthly Ceiling ($)</label>
                         <div class="relative">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
-                            <input type="number" id="b-limit" placeholder="0.00" step="10" min="10" class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-8 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition-all font-black text-xl">
+                            <input type="number" name="limit" id="b-limit" placeholder="0.00" step="10" min="10" class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-8 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition-all font-black text-xl">
                         </div>
                     </div>
 
@@ -79,7 +102,7 @@
                             <label class="text-xs font-bold uppercase tracking-widest text-slate-400">Alert Threshold</label>
                             <span id="threshold-val" class="text-lime-400 font-black text-lg">75%</span>
                         </div>
-                        <input type="range" id="b-threshold" min="50" max="100" value="75">
+                        <input type="range" name="threshold" id="b-threshold" min="50" max="100" value="75">
                         <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">The vault will warn you when spending reaches this percentage.</p>
                     </div>
 
@@ -212,6 +235,8 @@
                     // Qui, in un'app vera, faresti: window.location.href = 'strategy.html';
                 }, 2000);
             }, 1500);
+
+            
         }
     </script>
 </body>

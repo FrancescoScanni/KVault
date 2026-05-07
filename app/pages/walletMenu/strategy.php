@@ -1,3 +1,16 @@
+<?php
+    session_start();
+    require_once("../../models/wallet.php");
+    $wallet = new Wallet();
+
+    if(isset($_SESSION["budget_success"]) && $_SESSION["budget_success"] === true){
+        
+    }else{
+        
+    }
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -68,79 +81,44 @@
                 <div class="lg:col-span-2 space-y-6">
                     <h2 class="text-sm font-black uppercase tracking-widest text-slate-500 mb-4 flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                        Smart Budgets (April)
+                        Smart Budgets (<?php echo date("F Y"); ?>)
                     </h2>
 
                     <div class="space-y-4">
-                        
-                        <div class="glass-panel border border-slate-800 p-6 rounded-3xl">
-                            <div class="flex justify-between items-end mb-4">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-bold text-white">Transport & Auto</h3>
-                                        <p class="text-xs text-slate-400">Gas, Maintenance, Uber</p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-xl font-black">$45.00</span>
-                                    <span class="text-sm text-slate-500 font-bold"> / $150.00</span>
-                                </div>
-                            </div>
-                            <div class="w-full bg-slate-900 rounded-full h-2.5 border border-slate-800 overflow-hidden">
-                                <div class="bg-lime-400 h-2.5 rounded-full progress-animate shadow-[0_0_10px_rgba(163,230,53,0.5)]" style="width: 30%"></div>
-                            </div>
-                            <div class="mt-2 text-right text-xs font-bold text-lime-400">30% Used - On Track</div>
-                        </div>
-
-                        <div class="glass-panel border border-slate-800 p-6 rounded-3xl">
-                            <div class="flex justify-between items-end mb-4">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-bold text-white">Dining & Groceries</h3>
-                                        <p class="text-xs text-slate-400">Restaurants, Supermarket</p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-xl font-black">$340.50</span>
-                                    <span class="text-sm text-slate-500 font-bold"> / $400.00</span>
-                                </div>
-                            </div>
-                            <div class="w-full bg-slate-900 rounded-full h-2.5 border border-slate-800 overflow-hidden">
-                                <div class="bg-orange-400 h-2.5 rounded-full progress-animate shadow-[0_0_10px_rgba(251,146,60,0.5)]" style="width: 85%"></div>
-                            </div>
-                            <div class="mt-2 text-right text-xs font-bold text-orange-400">85% Used - Approaching Limit</div>
-                        </div>
-
-                        <div class="glass-panel border border-red-900/30 p-6 rounded-3xl danger-border bg-red-950/10">
-                            <div class="flex justify-between items-end mb-4">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-10 h-10 rounded-xl bg-red-950 border border-red-800 flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                                    </div>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <h3 class="font-bold text-white">Shopping & Fun</h3>
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30 uppercase tracking-wider">Breach</span>
+                        <?php
+                            $budgets = $wallet->getBudgets($_SESSION["userID"]);
+                            foreach($budgets as $budget) {
+                                $perc=round(($budget['current_spending'] / $budget['monthly_ceiling']) * 100);
+                                echo '<div class="glass-panel border border-slate-800 p-6 rounded-3xl">
+                                        <div class="flex justify-between items-end mb-4">
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center">
+                                                    <svg class="w-5 h-5 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                                </div>
+                                                <div>
+                                                    <h3 class="font-bold text-white">'. $budget['name'] .'</h3>
+                                                    <p class="text-xs text-slate-400">Threshold: '. $budget['alert_threshold'] .'%</p>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="text-xl font-black">'. $budget['current_spending'] .'</span>
+                                                <span class="text-sm text-slate-500 font-bold"> / '. $budget['monthly_ceiling'] .'</span>
+                                            </div>
                                         </div>
-                                        <p class="text-xs text-slate-400">Clothes, Gadgets, Hobbies</p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-xl font-black text-red-400">$245.00</span>
-                                    <span class="text-sm text-slate-500 font-bold"> / $200.00</span>
-                                </div>
-                            </div>
-                            <div class="w-full bg-slate-900 rounded-full h-2.5 border border-slate-800 overflow-hidden">
-                                <div class="bg-red-500 h-2.5 rounded-full progress-animate shadow-[0_0_10px_rgba(239,68,68,0.5)]" style="width: 100%"></div>
-                            </div>
-                            <div class="mt-2 text-right text-xs font-bold text-red-500">122% Used - Target Breached by $45.00</div>
-                        </div>
+                                        <div class="w-full bg-slate-900 rounded-full h-2.5 border border-slate-800 overflow-hidden">
+                                            <div class="bg-lime-400 h-2.5 rounded-full progress-animate shadow-[0_0_10px_rgba(163,230,53,0.5)]" style="width: ' . $perc . '%"></div>
+                                        </div>
+                                        <div class="mt-2 text-right text-xs font-bold text-lime-400">' . ($budget['monthly_ceiling'] > 0 ? $perc : 0) . '% Used - On Track</div>
+                                    </div> ';
+
+                            }
+                        ?>
+                        
+                        
+
+                        
+
+                        
 
                     </div>
                 </div>
@@ -161,6 +139,9 @@
                         </div>
                     </div>
 
+
+
+                    <!-- ACTIVE LEAKS  -->
                     <div class="glass-panel border border-slate-800 p-6 rounded-3xl">
                         <h3 class="font-black uppercase tracking-widest text-sm mb-2 flex items-center gap-2">
                             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>

@@ -2,6 +2,7 @@
     session_start();
     require_once("../models/wallet.php");
     require_once("../components/warnings.php");
+    
 
     if($_SESSION["logged"]==false){
         header("Location: logIn.php");
@@ -87,11 +88,11 @@
                             
                             <div class="flex p-1 bg-slate-950 border border-slate-800 rounded-xl mb-8 w-full max-w-[200px]">
                                 <label class="flex-1 text-center cursor-pointer relative">
-                                    <input onclick="<?php $_SESSION["income"]="out";?>" type="radio" name="tx_type" value="OUT" class="peer sr-only" checked>
+                                    <input type="radio" name="tx_type" value="out" class="peer sr-only" checked>
                                     <div class="py-2 text-xs font-bold uppercase tracking-wider text-slate-500 peer-checked:text-white peer-checked:bg-red-500/20 peer-checked:border peer-checked:border-red-500/50 rounded-lg transition-all">Expense</div>
                                 </label>
                                 <label class="flex-1 text-center cursor-pointer relative">
-                                    <input onclick="<?php $_SESSION["income"]="in";?>" type="radio" name="tx_type" value="IN" class="peer sr-only">
+                                    <input type="radio" name="tx_type" value="in" class="peer sr-only">
                                     <div class="py-2 text-xs font-bold uppercase tracking-wider text-slate-500 peer-checked:text-black peer-checked:bg-lime-400 peer-checked:shadow-[0_0_15px_rgba(163,230,53,0.3)] rounded-lg transition-all">Income</div>
                                 </label>
                             </div>
@@ -126,6 +127,7 @@
                                     <select name="wallet" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-lime-400 transition-colors appearance-none cursor-pointer">
                                         <option value="" disabled selected>Select a wallet</option>
                                         <?php 
+
                                             // Recuperiamo i wallet dell'utente dalla sessione
                                             $userWallets = $wallet->getWalletsByUserId($_SESSION["userID"]); 
 

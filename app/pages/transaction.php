@@ -11,16 +11,22 @@
         $category=trim($_POST["category"]);
         $wallet=trim($_POST["wallet"]);
         $desc=trim($_POST["desc"]);
+        $income=trim($_POST["tx_type"]);
     }
 
-
+    $_SESSION["income"]=$income;
+    if($income=="out"){
+        $income=0;
+    }else{
+        $income=1;
+    }
     $transaction=new Wallet();
     $wallet=$transaction->getWalletID($wallet);
-    $income = $_SESSION["income"] ? 0 : 1; 
+   
     if($transaction->addTransaction($_SESSION["userID"], $wallet, $amount, $desc, $date, $income)){
         $_SESSION["succTrans"]=true;
     }else{
-        $_SESSION["errTrans"]=true;
+        //$_SESSION["errTrans"]=true;
     }
     header("Location: newWallet.php");
 

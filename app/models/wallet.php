@@ -59,7 +59,6 @@
 
             try {
                 $conn->beginTransaction();
-
                 $sqlInsert = "INSERT INTO transactions (
                                 user_id, wallet_id, amount, description, 
                                 transaction_date, income
@@ -75,8 +74,7 @@
                     $income
                 ]);
 
-
-                if ($income) {
+                if ($_SESSION["income"] == "in") {
                     $sqlUpdate = "UPDATE wallets SET initial_balance = initial_balance + ? WHERE id = ? AND user_id = ?";
                 }else {
                     $sqlUpdate = "UPDATE wallets SET initial_balance = initial_balance - ? WHERE id = ? AND user_id = ?";
@@ -96,8 +94,20 @@
                 if ($conn->inTransaction()) {
                     $conn->rollBack();
                 }
-                error_log("Errore transazione: " . $e->getMessage());
-                return false;
+                echo "Errore transazione: " . $e->getMessage();
+                exit;
+            }
+        }
+        public function lastTransactions($user_id){
+            global $conn;
+            $sql="SELECT transactions.id, transactions.amount, transactions.transaction_date, wallets.name, transactions.income FROM transactions JOIN wallets ON transactions.wallet_id=wallets.id WHERE transactions.user_id=? ORDER BY transaction_date DESC LIMIT 5";
+            try{
+                $stsmt = $conn->prepare($sql);
+                $stsmt->execute([$user_id]);
+                return $stsmt->fetchAll(PDO::FETCH_ASSOC);
+            }catch(PDOException $e){
+                error_log("Errore recupero transazioni: " . $e->getMessage());
+                return [];
             }
         }
 
@@ -136,6 +146,49 @@
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
             } catch (PDOException $e) {
                 error_log("Errore recupero portafogli: " . $e->getMessage());
+                return [];
+            }
+        }
+
+
+        //ONLINE
+        public function getName($user_id){
+            global $conn;
+            $sql="SELECT name from users WHERE id=?;";
+            try {
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$user_id]);
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                return $result['name'] ?? 'Utente';
+            } catch (PDOException $e) {
+                error_log("Errore recupero nome utente: " . $e->getMessage());
+                return 'Utente';
+            }
+        }
+
+
+        //BUDGET
+        public function addBudget($user_id, $name, $ceiling, $threshold) {
+            global $conn;
+            try {
+                $sql = "INSERT INTO budgets (user_id, name, monthly_ceiling, alert_threshold) VALUES (?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                return $stmt->execute([$user_id, $name, $ceiling, $threshold]);
+            } catch (PDOException $e) {
+                error_log("Errore creazione budget: " . $e->getMessage());
+                return false;
+            }
+        }
+
+        public function getBudgets($user_id) {
+            global $conn;
+            try {
+                $sql = "SELECT * FROM budgets WHERE user_id = ? ORDER BY name ASC";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$user_id]);
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                error_log("Errore recupero budget: " . $e->getMessage());
                 return [];
             }
         }
