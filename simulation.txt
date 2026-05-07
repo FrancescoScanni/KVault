@@ -5,14 +5,6 @@ URL:      https://kvault.wuaze.com/pages/logIn.php
 Email:    dinosaur@gmail.com
 Password: Dinosaur000!
 
-
-DB credentials (if self-hosted)
---------------------------------
-DB_HOST:  localhost
-DB_NAME:  kvault
-DB_USER:  root
-DB_PASS:  rootpassword
-
 ---
 Alternatively, skip the simulation and register a new account
 from scratch to start with a clean slate.
