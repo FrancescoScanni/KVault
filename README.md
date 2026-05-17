@@ -2,7 +2,7 @@
 
 A PHP-based personal finance tracker web app integrated with a MySQL database and Tailwind CSS. It allows users to manage virtual wallets, track income and expenses, monitor money transactions, and get a clear overview of their financial balance through an intuitive and responsive interface. Read the "setup" section to begin!!!
 
-### -> DEMO: https://kvault.kesug.com/index.php
+### -> DEMO: https://kvault.kesug.com/
 
 ## ⚙️ Setup
 
