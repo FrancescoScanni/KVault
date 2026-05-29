@@ -4,7 +4,7 @@ A personal finance tracker built with PHP, MySQL, and Tailwind CSS. KVault helps
 
 Check out the setup section below to get started!
 
-### 🚀 Live Demo: https://kvault.kesug.com/
+### Live Demo: https://kvault.kesug.com/
 
 ---
 
@@ -20,7 +20,7 @@ Check out the setup section below to get started!
 2. Run `docker compose up` in your terminal to spin up the environment.
 3. Access the web app on port `80` (your database can be managed via the included phpMyAdmin panel).
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Backend:** PHP
 - **Database:** MySQL & phpMyAdmin
