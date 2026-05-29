@@ -1,43 +1,43 @@
 # KVault: your digital treasury
 
-A PHP-based personal finance tracker web app integrated with a MySQL database and Tailwind CSS. It allows users to manage virtual wallets, track income and expenses, monitor money transactions, and get a clear overview of their financial balance through an intuitive and responsive interface. Read the "setup" section to begin!!!
+A personal finance tracker built with PHP, MySQL, and Tailwind CSS. KVault helps you manage virtual wallets, log income and expenses, track transactions, and stay on top of your financial balance through a clean, responsive dark-themed interface. 
 
-### -> DEMO: https://kvault.kesug.com/
+Check out the setup section below to get started!
 
-## ⚙️ Setup
+### 🚀 Live Demo: https://kvault.kesug.com/
 
-### Online (simulation.txt)
-  1. Just click on the Demo link
-  2. Use the credentials in `simulation.txt` to load a pre-populated account prototype and explore the app with existing data
-       #### OR  
-  3. **Optional:** Start fresh by creating a new account from scratch exploring all the possible features.
+---
 
-### Self-hosted
-  1. Clone this repository in your editor
-  2. Run the *docker compose* file in the terminal
-  3. Access the phpMyAdmin panel and the web page
+##  Setup
 
-     
+### Online Demo
+1. Click the live demo link above.
+2. Check the credentials inside `simulation.txt` to log into a pre-populated account and test the app with existing data.
+3. **Alternatively:** Feel free to register a brand-new account to test the onboarding and features from scratch.
+
+### Local Setup (Self-hosted)
+1. Clone this repository to your local machine.
+2. Run `docker compose up` in your terminal to spin up the environment.
+3. Access the web app on port `80` (your database can be managed via the included phpMyAdmin panel).
+
 ## 🛠 Tech Stack
 
 - **Backend:** PHP
-- **Database:** MySQL
+- **Database:** MySQL & phpMyAdmin
 - **Frontend:** Tailwind CSS
 - **Hosting:** [InfinityFree](https://www.infinityfree.net/)
-- **Legal & Compliance:** [Iubenda](https://www.iubenda.com/) (Privacy Policy & Cookie Solution)
+- **Compliance:** [Iubenda](https://www.iubenda.com/) (Privacy Policy & Cookie Solution)
 
-## 🤖 AI Collaboration
+##  Main Features
 
-This project was developed with the support of advanced AI models:
+- **Wallet Management:** Create, customize, and monitor multiple virtual vaults.
+- **Transaction Logging:** Keep clear, detailed history logs for all income and expenses.
+- **Budget Limits:** Set monthly spending ceilings and alert thresholds for specific categories.
+- **Cyber-Vault UI:** A sleek, glassmorphism dark-mode interface designed for a high-tech financial experience.
 
-- **Google Gemini:** Used for color palettes/style, system architecture, research, and UI/image asset generation.
-- **Claude:** Used for advanced code debugging and refinement of the frontend responsive structures / README.
+##  AI Credits
 
-## 🚀 Core Features
+This project was built with the support of AI models for specific development steps:
 
-- **Wallet Management:** Create and monitor multiple virtual vaults.
-- **Transaction Tracking:** Detailed logs for income and expenses.
-- **Strategy Command:** Set monthly ceilings and alert thresholds for specific budget categories.
-- **Vault Runway:** Predictive calculation of liquidity based on 30-day burn rates.
-- **Cyber-Vault UI:** Dark-mode, glass-morphism interface for a high-tech financial experience.
-
+- **Google Gemini:** Assisted with color palette choices, system architecture research, and UI asset generation.
+- **Claude:** Used for code debugging and refining complex responsive layouts on the frontend.
