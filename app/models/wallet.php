@@ -44,7 +44,10 @@
                 $stmt->execute([$wallet]);
 
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                return $result ["id"];
+                if ($result && isset($result["id"])) {
+                    return $result["id"];
+                }
+                return null;
             }
             catch (PDOException $e) {
                 echo "Error: " . $e->getMessage();
