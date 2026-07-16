@@ -1,7 +1,7 @@
 KVault - Simulation Account
 ===========================
 
-URL:      https://kvault.wuaze.com/pages/logIn.php
+URL:      https://kvault.kesug.com/pages/logIn.php
 Email:    dinosaur@gmail.com
 Password: Dinosaur000!
 
