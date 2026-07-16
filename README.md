@@ -2,6 +2,8 @@
 
 KVault is  personal finance tracker built with PHP, MySQL, and Tailwind CSS. KVault helps you manage and stay on top of your financial balance through a clean, responsive dark-themed (fluo) interface. Feel free to setup and start exploring the platform!!!
 
+-> Demo link: [KVault](https://kvault.kesug.com)
+
 # What you can do...
  -  manage virtual wallets
  -  log income and expenses
