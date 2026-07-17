@@ -26,7 +26,6 @@ SET time_zone = "+00:00";
 --
 -- Struttura della tabella `budgets`
 --
-USE `KVault`;
 
 CREATE TABLE `budgets` (
   `id` int NOT NULL,
