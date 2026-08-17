@@ -4,6 +4,8 @@ KVault is  personal finance tracker built with PHP, MySQL, and Tailwind CSS. KVa
 
 -> Demo link: [KVault](https://kvault.borlo.hackclub.app)
 -> Mobile example screenshot
+<img width="1896" height="906" alt="image" src="https://github.com/user-attachments/assets/3ee365ef-1cb5-44fe-9145-10795fa3d8e9" />
+
 
 
 # What you can do...
